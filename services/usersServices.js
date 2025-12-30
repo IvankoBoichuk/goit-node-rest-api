@@ -36,3 +36,14 @@ export const updateUserAvatar = async (id, avatarURL) => {
   await User.update({ avatarURL }, { where: { id } });
   return await User.findByPk(id);
 };
+
+export const findUserByVerificationToken = async (verificationToken) => {
+  return await User.findOne({ where: { verificationToken } });
+};
+
+export const verifyUser = async (id) => {
+  await User.update(
+    { verify: true, verificationToken: null },
+    { where: { id } }
+  );
+};

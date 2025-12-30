@@ -13,5 +13,6 @@ authRouter.post("/logout", authenticate, usersControllers.logout);
 authRouter.get("/current", authenticate, usersControllers.current);
 authRouter.patch("/subscription", authenticate, validateBody(subscriptionSchema), usersControllers.updateSubscription);
 authRouter.patch("/avatars", authenticate, upload.single("avatar"), usersControllers.updateAvatar);
+authRouter.get("/verify/:verificationToken", usersControllers.verifyEmail);
 
 export default authRouter;
