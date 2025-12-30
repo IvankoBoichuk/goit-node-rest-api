@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import { sendVerificationEmail } from "../services/emailService.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,6 +20,9 @@ export const register = async (req, res, next) => {
     }
 
     const newUser = await usersServices.createUser(email, password);
+
+    // Send verification email
+    await sendVerificationEmail(email, newUser.verificationToken);
 
     res.status(201).json({
       user: {
@@ -43,6 +47,10 @@ export const login = async (req, res, next) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       throw HttpError(401, "Email or password is wrong");
+    }
+
+    if (!user.verify) {
+      throw HttpError(401, "Email not verified");
     }
 
     const token = jwt.sign(
