@@ -173,7 +173,13 @@ export const resendVerifyEmail = async (req, res, next) => {
       throw HttpError(400, "Verification has already been passed");
     }
 
-    await sendVerificationEmail(email, user.verificationToken);
+    // If user doesn't have a verification token (old user), generate a new one
+    let verificationToken = user.verificationToken;
+    if (!verificationToken) {
+      verificationToken = await usersServices.updateVerificationToken(user.id);
+    }
+
+    await sendVerificationEmail(email, verificationToken);
 
     res.status(200).json({
       message: "Verification email sent",

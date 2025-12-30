@@ -50,3 +50,9 @@ export const verifyUser = async (id) => {
     { where: { id } }
   );
 };
+
+export const updateVerificationToken = async (id) => {
+  const verificationToken = uuidv4();
+  await User.update({ verificationToken }, { where: { id } });
+  return verificationToken;
+};
