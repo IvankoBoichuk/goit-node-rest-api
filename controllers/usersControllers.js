@@ -159,3 +159,26 @@ export const verifyEmail = async (req, res, next) => {
     next(error);
   }
 };
+
+export const resendVerifyEmail = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    const user = await usersServices.findUserByEmail(email);
+    if (!user) {
+      throw HttpError(404, "User not found");
+    }
+
+    if (user.verify) {
+      throw HttpError(400, "Verification has already been passed");
+    }
+
+    await sendVerificationEmail(email, user.verificationToken);
+
+    res.status(200).json({
+      message: "Verification email sent",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
