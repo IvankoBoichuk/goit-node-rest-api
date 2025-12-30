@@ -26,7 +26,7 @@ export async function connectDB() {
     console.log('Database connection successful');
     
     // Синхронізація моделей з базою даних (створення таблиць)
-    await sequelize.sync({ alter: false });
+    await sequelize.sync({ alter: true });
   } catch (error) {
     console.error('Unable to connect to the database:', error.message);
     process.exit(1);

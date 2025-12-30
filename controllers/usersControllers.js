@@ -2,6 +2,12 @@ import * as usersServices from "../services/usersServices.js";
 import HttpError from "../helpers/HttpError.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const register = async (req, res, next) => {
   try {
@@ -94,6 +100,33 @@ export const updateSubscription = async (req, res, next) => {
     res.status(200).json({
       email: updatedUser.email,
       subscription: updatedUser.subscription,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateAvatar = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      throw HttpError(400, "No file uploaded");
+    }
+
+    const { id } = req.user;
+    const { path: tempPath, filename } = req.file;
+    
+    // Шлях до нового місця збереження
+    const avatarsDir = path.join(__dirname, "../public/avatars");
+    const newPath = path.join(avatarsDir, filename);
+    
+    // Переміщення файлу з temp в public/avatars
+    await fs.rename(tempPath, newPath);
+    
+    const avatarURL = `/avatars/${filename}`;
+    const updatedUser = await usersServices.updateUserAvatar(id, avatarURL);
+
+    res.status(200).json({
+      avatarURL: updatedUser.avatarURL,
     });
   } catch (error) {
     next(error);
