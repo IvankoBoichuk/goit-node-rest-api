@@ -1,7 +1,12 @@
 import Contact from '../models/Contact.js';
 
-async function listContacts(userId) {
-  return await Contact.findAll({ where: { owner: userId } });
+async function listContacts(userId, page = 1, limit = 20) {
+  const offset = (page - 1) * limit;
+  return await Contact.findAll({ 
+    where: { owner: userId },
+    limit,
+    offset
+  });
 }
 
 async function getContactById(contactId, userId) {

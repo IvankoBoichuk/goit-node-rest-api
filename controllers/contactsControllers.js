@@ -2,7 +2,10 @@ import { listContacts, getContactById, removeContact, addContact, updateContact 
 
 export const getAllContacts = (req, res) => {
     const userId = req.user.id;
-    return listContacts(userId).then(contacts => res.json(contacts));
+    const { page = 1, limit = 20 } = req.query;
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+    return listContacts(userId, pageNum, limitNum).then(contacts => res.json(contacts));
 };
 
 export const getOneContact = (req, res) => {
