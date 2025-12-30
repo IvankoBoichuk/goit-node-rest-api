@@ -58,3 +58,15 @@ export const login = async (req, res, next) => {
     next(error);
   }
 };
+
+export const logout = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+
+    await usersServices.updateUserToken(id, null);
+
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};
