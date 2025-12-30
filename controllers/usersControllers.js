@@ -1,5 +1,7 @@
 import * as usersServices from "../services/usersServices.js";
 import HttpError from "../helpers/HttpError.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export const register = async (req, res, next) => {
   try {
@@ -16,6 +18,40 @@ export const register = async (req, res, next) => {
       user: {
         email: newUser.email,
         subscription: newUser.subscription,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await usersServices.findUserByEmail(email);
+    if (!user) {
+      throw HttpError(401, "Email or password is wrong");
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw HttpError(401, "Email or password is wrong");
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    await usersServices.updateUserToken(user.id, token);
+
+    res.status(200).json({
+      token,
+      user: {
+        email: user.email,
+        subscription: user.subscription,
       },
     });
   } catch (error) {
