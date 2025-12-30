@@ -5,6 +5,7 @@ import cors from "cors";
 
 import contactsRouter from "./routes/contactsRouter.js";
 import { connectDB } from "./db/sequelize.js";
+import "./models/index.js";
 
 const app = express();
 
