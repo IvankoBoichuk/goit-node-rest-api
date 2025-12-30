@@ -22,3 +22,8 @@ export const findUserById = async (id) => {
 export const updateUserToken = async (id, token) => {
   await User.update({ token }, { where: { id } });
 };
+
+export const updateUserSubscription = async (id, subscription) => {
+  await User.update({ subscription }, { where: { id } });
+  return await User.findByPk(id);
+};

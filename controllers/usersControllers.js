@@ -83,3 +83,19 @@ export const current = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateSubscription = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+    const { subscription } = req.body;
+
+    const updatedUser = await usersServices.updateUserSubscription(id, subscription);
+
+    res.status(200).json({
+      email: updatedUser.email,
+      subscription: updatedUser.subscription,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
